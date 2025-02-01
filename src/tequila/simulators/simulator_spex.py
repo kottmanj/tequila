@@ -173,22 +173,16 @@ class BackendCircuitSpex(BackendCircuit):
         exp_term = spex_tequila.ExpPauliTerm()
         if isinstance(gate, ExponentialPauliGateImpl):
             parameter = self.assign_parameter(gate.parameter)
-            try:
-                if self.angle_threshold != None and abs(parameter) < self.angle_threshold:
+            if self.angle_threshold != None and abs(parameter) < self.angle_threshold:
                     return
-            except:
-                pass
             exp_term.pauli_map = extract_pauli_dict(gate.paulistring)
             exp_term.angle = parameter
             circuit.append(exp_term)
 
         elif isinstance(gate, RotationGateImpl):
             parameter = self.assign_parameter(gate.parameter)
-            try:
-                if self.angle_threshold != None and abs(gate.parameter) < self.angle_threshold:
-                    return
-            except:
-                pass
+            if self.angle_threshold != None and abs(parameter) < self.angle_threshold:
+                return
             exp_term.pauli_map = extract_pauli_dict(gate.generator)
             exp_term.angle = parameter
             circuit.append(exp_term)
@@ -197,11 +191,8 @@ class BackendCircuitSpex(BackendCircuit):
             # Convert standard gates to Pauli rotations
             for ps in gate.make_generator(include_controls=True).paulistrings:
                 angle = numpy.pi * ps.coeff
-                try:
-                    if self.angle_threshold != None and abs(angle) < self.angle_threshold:
-                        continue
-                except:
-                    pass
+                if self.angle_threshold != None and abs(angle) < self.angle_threshold:
+                    continue
                 exp_term = spex_tequila.ExpPauliTerm()
                 exp_term.pauli_map = dict(ps.items())
                 exp_term.angle = angle
@@ -218,11 +209,8 @@ class BackendCircuitSpex(BackendCircuit):
         exp_term = spex_tequila.ExpPauliTerm()
         parameter = self.assign_parameter(gate.parameter)
         if isinstance(gate, ExponentialPauliGateImpl):
-            try:
-                if self.angle_threshold != None and abs(gate.parameter) < self.angle_threshold:
-                    return
-            except:
-                pass
+            if self.angle_threshold != None and abs(parameter) < self.angle_threshold:
+                return
             exp_term.pauli_map = extract_pauli_dict(gate.paulistring)
             exp_term.angle = parameter
             circuit.append(exp_term)
@@ -240,12 +228,9 @@ class BackendCircuitSpex(BackendCircuit):
         elif isinstance(gate, QGateImpl):
             parameter = self.assign_parameter(gate.parameter)
             for ps in gate.make_generator(include_controls=True).paulistrings:
-                try:
-                    if self.angle_threshold != None and abs(gate.parameter) < self.angle_threshold:
-                        print("used")
-                        continue
-                except:
-                    pass
+                if self.angle_threshold != None and abs(parameter) < self.angle_threshold:
+                    print("used")
+                    continue
                 exp_term = spex_tequila.ExpPauliTerm()
                 exp_term.pauli_map = dict(ps.items())
                 exp_term.angle = parameter
