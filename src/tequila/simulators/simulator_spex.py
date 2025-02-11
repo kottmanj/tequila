@@ -130,12 +130,17 @@ class BackendCircuitSpex(BackendCircuit):
     
     def create_circuit(self, abstract_circuit=None, variables=None, *args, **kwargs):
         """Compile circuit with caching using MD5 hash"""
+        print("create circuit")
+        print(abstract_circuit is None)
         if abstract_circuit is None:
+            print("abort")
             abstract_circuit = self.abstract_circuit
-
+        
         new_hash = circuit_hash(abstract_circuit)
-
+        print(new_hash)
+        print(self.cached_circuit_hash)
         if (new_hash is not None) and (new_hash == self.cached_circuit_hash):
+            print("abort")
             return self.cached_circuit
         
         circuit = super().create_circuit(abstract_circuit=abstract_circuit, variables=variables, *args, **kwargs)
@@ -177,8 +182,14 @@ class BackendCircuitSpex(BackendCircuit):
                     term.pauli_map = {qubit_map[old]: op for old, op in term.pauli_map.items()}
 
         self.n_qubits_compressed = len(used_qubits)
+    
+    def update_variables(self, variables, *args, **kwargs):
+        self.cached_circuit_hash = None
+        self.cached_circuit = []
+        super().update_variables(variables)
 
     def assign_parameter(self, param, variables):
+        print("assigning ", param, " with ", variables)
         if isinstance(param, (int, float, complex)):
             return float(param)
         if callable(param):
@@ -263,7 +274,6 @@ class BackendCircuitSpex(BackendCircuit):
         Returns:
             QubitWaveFunction: Sparse state representation
         """
-
         # Initialize state
         if isinstance(initial_state, int):
             if initial_state == 0:
